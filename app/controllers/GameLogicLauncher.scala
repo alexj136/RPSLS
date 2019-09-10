@@ -10,5 +10,7 @@ object GameLogicLauncher {
     val player2: ActorRef =
       aSys.actorOf(Props(new ComputerPlayer(umpire)), "player2")
     umpire ! UmpireGo(List(player1, player2))
+    Thread.sleep(6000)
+    umpire ! UmpireShowPlays
   }
 }
