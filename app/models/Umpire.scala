@@ -1,5 +1,17 @@
 import akka.actor._
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer, HashMap}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+abstract class RPSLSActor extends Actor {
+  def delay(delayMillis: Int): Unit = context.system.scheduler
+    .scheduleOnce(Duration(delayMillis, MILLISECONDS))(global)
+  def randInt(exclusiveMax: Int) = RPSLSActor.random.nextInt(exclusiveMax)
+}
+
+object RPSLSActor {
+  val random = new scala.util.Random()
+}
 
 /**
  * Commands are typed messages for actors
@@ -13,63 +25,70 @@ abstract class Command
 case object MakePlayCommand extends Command
 
 /**
+ * SubmitPlay is sent by players to the Umpire with their id and play
+ */
+case class SubmitPlay(id: Int, play: Play) extends Command
+
+/**
  * UmpireGo is used externally to initiate the actor system by telling the
  * umpire to start doing its thing
  */
 case class UmpireGo(players: List[ActorRef]) extends Command
 
 /**
- * PointsResponse is sent by the umpire to the player to inform them of their
- * score for the round
+ * UmpireComputeScores tells the umpire to look at the received plays and
+ * compute scores for the players
  */
-case class PointsResponse(pts: Int) extends Command
+case object UmpireComputeScores extends Command
 
-class Umpire(logic: Logic) extends Actor {
-  val plays: ListBuffer[(Play, ActorRef)] = ListBuffer()
+class Umpire(logic: Logic) extends RPSLSActor {
+  val plays: ListBuffer[(Int, Play)] = ListBuffer()
+  val scores: HashMap[Int, Int] = HashMap()
 
   override def receive: Receive = {
-    case play if play.isInstanceOf[Play] => {
-      plays += ((play.asInstanceOf[Play], sender()))
-    }
+    case SubmitPlay(id, play) =>
+      println(s"Umpire got SubmitPlay($id, $play)"); plays += ((id, play))
     case UmpireGo(players) => {
+      plays.clear
+      println(s"Scores initialised: $scores")
       players foreach (_ ! MakePlayCommand)
-      Umpire.delay(5000)
-      val outcomes: Map[ActorRef, (Play, Int)] = logic.multiplay(plays.toList)
-      players foreach (p => p ! PointsResponse(outcomes(p)._2))
+    }
+    case UmpireComputeScores => {
+      println(s"Plays: $plays")
+      val outcomes: Map[Int, Int] = logic.multiplay(plays.toList)
+      println(s"Outcomes: $outcomes")
+      outcomes foreach { case (id, pts) =>
+        scores += (id -> (scores.getOrElse(id, 0) + pts))
+      }
+      println(outcomes)
+      println(scores)
     }
   }
 }
 
-object Umpire {
-  val random = new scala.util.Random()
-  def delay(delayMilliseconds: Int): Unit = Thread.sleep(delayMilliseconds)
-}
-
-abstract class Player(umpire: ActorRef) extends Actor {
+abstract class Player(id: Int, umpire: ActorRef) extends RPSLSActor {
   val playOptions: List[Play]
 }
 
-class HumanPlayer(umpire: ActorRef) extends Player(umpire) {
+class HumanPlayer(id: Int, umpire: ActorRef) extends Player(id, umpire) {
   override def receive: Receive = ???
   val playOptions: List[Play] = List(Rock, Paper, Scissors, Lizard, Spock)
 }
 
-class ComputerPlayer(umpire: ActorRef) extends Player(umpire) {
-  var points: Int = 0
+class ComputerPlayer(id: Int, umpire: ActorRef) extends Player(id, umpire) {
   val playOptions: List[Play] = List(Rock, Paper, Scissors, Lizard, Spock)
-  private def randomDelayMilliseconds: Int = Umpire.random.nextInt(5000)
-  private def randomDelay: Unit = Umpire.delay(randomDelayMilliseconds)
+  private def randomDelayMilliseconds: Int = randInt(5000)
+  private def randomDelay: Unit = delay(randomDelayMilliseconds)
   private def randomListElement[T](list: List[T]): T =
-    list(Umpire.random.nextInt(list.length))
+    list(randInt(list.length))
   private def randomPlay: Play = randomListElement(playOptions)
 
   override def receive: Receive = {
     case MakePlayCommand => {
+      println(s"Player $id got MakePlayCommand")
       randomDelay
-      sender() ! randomPlay
-    }
-    case PointsResponse(pts) => {
-      points += pts
+      sender() ! SubmitPlay(id, randomPlay)
+      println(s"Player $id sent SubmitPlay($id, $randomPlay)")
     }
   }
 }

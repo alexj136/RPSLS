@@ -42,18 +42,24 @@ class Logic {
   def play(play1: Play, play2: Play): Outcome =
     if (play1 == play2) Draw else defaultGraph((play1, play2))
 
-  def multiplay[T](plays: List[(Play, T)]): Map[T, (Play, Int)] = {
+  def multiplay[T](plays: List[(T, Play)]): Map[T, Int] = {
 
+    // Generate a mapping from each kind of play to how many players played that
+    // play
     val playCounts: Map[Play, Int] = (playTypes map { case play =>
-      (play, plays.count(_._1 == play)) }).toMap
+      (play, plays.count(_._2 == play)) }).toMap
 
+    // Count how many of a certain outcome occurred for a given play.
+    // outcomeCheck asks if a given outcome is one we're interested in.
+    // p is the play that was made. The result should be the number of the
+    // described outcome that occur for p.
     def outcomeCount(outcomeCheck: Outcome => Boolean, p: Play): Int =
       playCounts.updatedWith(p)(_ map (_ - 1)).view
       .filterKeys(p2 => outcomeCheck(play(p, p2))).values.foldLeft(0)(_ + _)
 
-      (plays map { case (p, t) => (t, (p, 3 * outcomeCount({
+      (plays map { case (t, p) => (t, 3 * outcomeCount({
         case Win(_) => true 
         case _ => false
-      }, p) + outcomeCount(_ == Draw, p))) }).toMap
+      }, p) + outcomeCount(_ == Draw, p)) }).toMap
   }
 }
