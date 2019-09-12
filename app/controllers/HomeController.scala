@@ -22,7 +22,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(views.html.index())
   }
 
-  def hello = Action {
-    Ok(views.html.hello())
+  def hello(name: String) = Action {
+    println("DEBUG")
+    Ok(views.html.hello(name))
   }
 }
