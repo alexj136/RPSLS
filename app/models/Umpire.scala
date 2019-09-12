@@ -46,22 +46,25 @@ class Umpire(logic: Logic) extends RPSLSActor {
   val scores: HashMap[Int, Int] = HashMap()
 
   override def receive: Receive = {
-    case SubmitPlay(id, play) =>
-      println(s"Umpire got SubmitPlay($id, $play)"); plays += ((id, play))
+    case SubmitPlay(id, play) => {
+      plays += ((id, play))
+      println(s"Umpire got SubmitPlay($id, $play)")
+    }
     case UmpireGo(players) => {
       plays.clear
-      println(s"Scores initialised: $scores")
       players foreach (_ ! MakePlayCommand)
+      println("Umpire got UmpireGo")
+      println(s"    Scores initialised: $scores")
     }
     case UmpireComputeScores => {
-      println(s"Plays: $plays")
       val outcomes: Map[Int, Int] = logic.multiplay(plays.toList)
-      println(s"Outcomes: $outcomes")
       outcomes foreach { case (id, pts) =>
         scores += (id -> (scores.getOrElse(id, 0) + pts))
       }
-      println(outcomes)
-      println(scores)
+      println("Umpire got UmpireComputeScores")
+      println(s"    Plays: $plays")
+      println(s"    Outcomes: $outcomes")
+      println(s"    Scores: $scores")
     }
   }
 }
@@ -85,9 +88,9 @@ class ComputerPlayer(id: Int, umpire: ActorRef) extends Player(id, umpire) {
 
   override def receive: Receive = {
     case MakePlayCommand => {
-      println(s"Player $id got MakePlayCommand")
       randomDelay
       sender() ! SubmitPlay(id, randomPlay)
+      println(s"Player $id got MakePlayCommand")
       println(s"Player $id sent SubmitPlay($id, $randomPlay)")
     }
   }
