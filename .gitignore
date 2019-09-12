@@ -2,9 +2,12 @@
 /bower_components
 /.idea
 .project
+/.project
 .classpath
+/.classpath
 *.launch
 .settings/
+/.settings
 project/project
 project/target
 /.idea_modules
