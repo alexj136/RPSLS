@@ -3,6 +3,11 @@ package controllers
 import javax.inject._
 import play.api._
 import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.format.Formats._
+
+case class NameHold(str: String)
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -10,6 +15,8 @@ import play.api.mvc._
  */
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+
+  var nameHold: NameHold = NameHold("initialName")
 
   /**
    * Create an Action to render an HTML page.
@@ -19,7 +26,20 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * a path of `/`.
    */
   def index() = Action {
-    println("DEBUG")
     Ok(views.html.index())
+  }
+
+  val nameForm: Form[NameHold] = Form(
+    mapping("str" -> text)(NameHold.apply)(NameHold.unapply)
+  )
+
+  def getName() = Action { implicit request =>
+    nameHold = nameForm.bindFromRequest.get
+    println(nameHold.str)
+    Redirect(routes.HomeController.name(nameHold.str))
+  }
+
+  def name(nameStr: String) = Action {
+    Ok(views.html.name(nameStr))
   }
 }
