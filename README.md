@@ -11,3 +11,11 @@ of the inputs given for the players and rounds.
 
 Connecting the two parts together was more than I could manage. Please bear in
 mind that this is the first web app I've ever built!
+
+#### Instructions
+
+- The web app can be build and run with `sbt run`, and can be played with by
+  navigating to `localhost:9000`.
+- A game can be simulated with output on the command line by opening the REPL
+  with `sbt console` and then running `models.Manager.runGame(players, rounds)`
+  where players and rounds are integers.
