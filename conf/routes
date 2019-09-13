@@ -1,3 +1,4 @@
 GET  /             controllers.HomeController.index
 POST /             controllers.HomeController.getUserName
+POST /             controllers.HomeController.startGame
 GET  /name         controllers.HomeController.name(nameStr: String)

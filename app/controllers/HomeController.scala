@@ -16,7 +16,8 @@ case class UserName(str: String)
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
-  var userName: UserName = UserName("initialName")
+  val defaultUN: String = "DEFAULT_USERNAME"
+  var userName: UserName = UserName(defaultUN)
 
   /**
    * Create an Action to render an HTML page.
@@ -35,12 +36,15 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def getUserName() = Action { implicit request =>
     val formData = nameForm.bindFromRequest
-    userName = if (formData.hasErrors) UserName("err") else formData.get
-    println(userName.str)
+    userName = if (formData.hasErrors) UserName(defaultUN) else formData.get
     Redirect(routes.HomeController.name(userName.str))
   }
 
   def name(nameStr: String) = Action { implicit request =>
-    Ok(views.html.name(nameStr))
+    Ok(views.html.game(nameStr))
+  }
+
+  def startGame() = Action { implicit request =>
+    Ok(views.html.index())
   }
 }
