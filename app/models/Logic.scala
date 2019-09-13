@@ -1,3 +1,8 @@
+package models
+
+/*
+ * The kinds of Play
+ */
 trait Play
 case object Rock     extends Play
 case object Paper    extends Play
@@ -5,6 +10,9 @@ case object Scissors extends Play
 case object Lizard   extends Play
 case object Spock    extends Play
 
+/*
+ * Outcomes model Win/Loss/Draw
+ */
 sealed trait Outcome {
   def invert: Outcome = this match {
     case Win (how) => Loss(how)
@@ -35,13 +43,28 @@ class Logic {
 
     ((Lizard  , Spock   ), Win ("poisons"    )))
 
+  /*
+   * The 'defaultGraph' defines the rules about which plays beat which - given a
+   * pair of plays e.g. Rock and Scissors, get the outcome for the first listed
+   * player, which in this case would be Win("blunts").
+   *     The full graph is constructed from the 'halfGraph' by adding inversions
+   * of its rules.
+   */
   val defaultGraph: Map[(Play, Play), Outcome] = halfGraph ++ (halfGraph map {
     case ((play1, play2), outcome) => ((play2, play1), outcome.invert)
   })
 
+  /*
+   * Simulate a two player match, giving the outcome for the first player
+   */
   def play(play1: Play, play2: Play): Outcome =
     if (play1 == play2) Draw else defaultGraph((play1, play2))
 
+  /*
+   * Simulate an n-player match, where player IDs are given by the generic
+   * parameter of type T. Return the appropriate number of points for each
+   * player T in a map from player IDs to points scored.
+   */
   def multiplay[T](plays: List[(T, Play)]): Map[T, Int] = {
 
     // Generate a mapping from each kind of play to how many players played that

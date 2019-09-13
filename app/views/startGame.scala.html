@@ -6,19 +6,19 @@
     <h1>Playing RPSLS, @nameStr!</h1>
     <p>Number of AI players: @aiPlayers</p>
     <p>Number of rounds: @rounds</p>
-    <form action="@routes.HomeController.rock">
+    <form action="@routes.HomeController.rock" method="post">
         <input type="submit" value="Rock" />
     </form>
-    <form action="@routes.HomeController.paper">
+    <form action="@routes.HomeController.paper" method="post">
         <input type="submit" value="Paper" />
     </form>
-    <form action="@routes.HomeController.scissors">
+    <form action="@routes.HomeController.scissors" method="post">
         <input type="submit" value="Scissors" />
     </form>
-    <form action="@routes.HomeController.lizard">
+    <form action="@routes.HomeController.lizard" method="post">
         <input type="submit" value="Lizard" />
     </form>
-    <form action="@routes.HomeController.spock">
+    <form action="@routes.HomeController.spock" method="post">
         <input type="submit" value="Spock" />
     </form>
 }

@@ -77,6 +77,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def startGame(nameStr: String, aiPlayers: Int, rounds: Int) =
     Action { implicit request =>
+      models.Manager.runGame(aiPlayers, rounds)
       ???
     }
 }

@@ -1,3 +1,5 @@
+package models
+
 import akka.actor.ActorRef
 
 /**
