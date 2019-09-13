@@ -1,0 +1,13 @@
+@(nameStr: String)(playerMsg: String)
+
+@main("RPSLS") {
+    <h1>Choose your game settings, @nameStr!</h1>
+    <p>@playerMsg</p>
+    <form action="@routes.HomeController.getGameSettings" method="post">
+        <p>Number of AI players (1+)</p>
+        <input name="aiPlayers" type="text"/>
+        <p>Number of rounds (5 to 21)</p>
+        <input name="rounds" type="text"/>
+        <button>Submit</button>
+    </form>
+}

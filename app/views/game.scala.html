@@ -1,9 +1,0 @@
-@(nameStr: String)
-
-@main("RPSLS") {
-    <h1>Welcome to RPSLS, @nameStr!</h1>
-    <p>2 players, 3 rounds</p>
-    <form action="@routes.HomeController.startGame">
-        <input type="submit" value="Start Game"/>
-    </form>
-}

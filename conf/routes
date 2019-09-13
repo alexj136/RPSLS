@@ -1,4 +1,4 @@
-GET  /             controllers.HomeController.index
-POST /             controllers.HomeController.getUserName
-POST /             controllers.HomeController.startGame
-GET  /name         controllers.HomeController.name(nameStr: String)
+GET  /                controllers.HomeController.name(nameStr: String)
+POST /getUserName     controllers.HomeController.getUserName
+GET  /gameSettings    controllers.HomeController.gameSettings(nameStr: String, aiP: Int, rds: Int)
+POST /getGameSettings controllers.HomeController.getGameSettings

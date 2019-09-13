@@ -9,6 +9,8 @@ import play.api.data.format.Formats._
 
 case class UserName(str: String)
 
+case class GameSettings(aiPlayers: String, rounds: String)
+
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -18,6 +20,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   val defaultUN: String = "DEFAULT_USERNAME"
   var userName: UserName = UserName(defaultUN)
+  var userGameSettings: GameSettings = GameSettings("1", "5")
 
   /**
    * Create an Action to render an HTML page.
@@ -35,16 +38,46 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
   )
 
   def getUserName() = Action { implicit request =>
-    val formData = nameForm.bindFromRequest
-    userName = if (formData.hasErrors) UserName(defaultUN) else formData.get
+    userName = nameForm.bindFromRequest.get
     Redirect(routes.HomeController.name(userName.str))
   }
 
   def name(nameStr: String) = Action { implicit request =>
-    Ok(views.html.game(nameStr))
+    Ok(views.html.gameSettings(nameStr)(""))
   }
 
-  def startGame() = Action { implicit request =>
-    Ok(views.html.index())
+  val gameSettingsForm: Form[GameSettings] = Form(
+    mapping("aiPlayers" -> text, "rounds" -> text)
+      (GameSettings.apply)(GameSettings.unapply)
+  )
+
+  def getGameSettings() = Action { implicit request =>
+    userGameSettings = gameSettingsForm.bindFromRequest.get
+    (Ops.parseInt(userGameSettings.aiPlayers),
+        Ops.parseInt(userGameSettings.rounds)) match {
+      case (Some(aiP), Some(rds)) if aiP > 0 && rds > 4 && rds < 22 => {
+        println("ok")
+        Redirect(routes.HomeController.gameSettings(userName.str, aiP, rds))
+      }
+      case _ => ???
+    }
+  }
+
+  def gameSettings(nameStr: String, aiP: Int, rds: Int) =
+    Action { implicit request =>
+      Ok(views.html.startGame(nameStr, aiP, rds))
+    }
+
+  def startGame(nameStr: String, aiPlayers: Int, rounds: Int) =
+    Action { implicit request =>
+      ???
+    }
+}
+
+object Ops {
+  def parseInt(str: String): Option[Int] = try {
+    Some(str.toInt)
+  } catch {
+    case e: NumberFormatException => None
   }
 }
