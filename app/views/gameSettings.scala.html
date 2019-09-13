@@ -1,6 +1,6 @@
 @(nameStr: String)(playerMsg: String)
 
-@main("RPSLS") {
+@main("RPSLS"){ }{
     <h1>Choose your game settings, @nameStr!</h1>
     <p>@playerMsg</p>
     <form action="@routes.HomeController.getGameSettings" method="post">

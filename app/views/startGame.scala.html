@@ -1,7 +1,24 @@
 @(nameStr: String, aiPlayers: Int, rounds: Int)
 
-@main("RPSLS") {
+@main("RPSLS"){
+<!--><meta http-equiv="refresh" content="1"></!-->
+}{
     <h1>Playing RPSLS, @nameStr!</h1>
     <p>Number of AI players: @aiPlayers</p>
-    <p>Number of rounds (5 to 21): @rounds</p>
+    <p>Number of rounds: @rounds</p>
+    <form action="@routes.HomeController.rock">
+        <input type="submit" value="Rock" />
+    </form>
+    <form action="@routes.HomeController.paper">
+        <input type="submit" value="Paper" />
+    </form>
+    <form action="@routes.HomeController.scissors">
+        <input type="submit" value="Scissors" />
+    </form>
+    <form action="@routes.HomeController.lizard">
+        <input type="submit" value="Lizard" />
+    </form>
+    <form action="@routes.HomeController.spock">
+        <input type="submit" value="Spock" />
+    </form>
 }

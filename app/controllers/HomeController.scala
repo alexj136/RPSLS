@@ -39,11 +39,11 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def getUserName() = Action { implicit request =>
     userName = nameForm.bindFromRequest.get
-    Redirect(routes.HomeController.name(userName.str))
+    Redirect(routes.HomeController.name(userName.str, ""))
   }
 
-  def name(nameStr: String) = Action { implicit request =>
-    Ok(views.html.gameSettings(nameStr)(""))
+  def name(nameStr: String, errMsg: String) = Action { implicit request =>
+    Ok(views.html.gameSettings(nameStr)(errMsg))
   }
 
   val gameSettingsForm: Form[GameSettings] = Form(
@@ -56,10 +56,11 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     (Ops.parseInt(userGameSettings.aiPlayers),
         Ops.parseInt(userGameSettings.rounds)) match {
       case (Some(aiP), Some(rds)) if aiP > 0 && rds > 4 && rds < 22 => {
-        println("ok")
         Redirect(routes.HomeController.gameSettings(userName.str, aiP, rds))
       }
-      case _ => ???
+      case _ => {
+        Redirect(routes.HomeController.name(userName.str, "Invalid choice!"))
+      }
     }
   }
 
@@ -67,6 +68,12 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Action { implicit request =>
       Ok(views.html.startGame(nameStr, aiP, rds))
     }
+
+  def rock()     = Action { implicit request => ??? }
+  def paper()    = Action { implicit request => ??? }
+  def scissors() = Action { implicit request => ??? }
+  def lizard()   = Action { implicit request => ??? }
+  def spock()    = Action { implicit request => ??? }
 
   def startGame(nameStr: String, aiPlayers: Int, rounds: Int) =
     Action { implicit request =>

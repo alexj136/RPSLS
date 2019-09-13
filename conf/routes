@@ -1,5 +1,10 @@
 GET  /                controllers.HomeController.index
-GET  /name            controllers.HomeController.name(nameStr: String)
 POST /getUserName     controllers.HomeController.getUserName
-GET  /gameSettings    controllers.HomeController.gameSettings(nameStr: String, aiP: Int, rds: Int)
+GET  /name            controllers.HomeController.name(nameStr: String, errMsg: String)
 POST /getGameSettings controllers.HomeController.getGameSettings
+GET  /gameSettings    controllers.HomeController.gameSettings(nameStr: String, aiP: Int, rds: Int)
+POST /rock            controllers.HomeController.rock
+POST /paper           controllers.HomeController.paper
+POST /scissors        controllers.HomeController.scissors
+POST /lizard          controllers.HomeController.lizard
+POST /spock           controllers.HomeController.spock

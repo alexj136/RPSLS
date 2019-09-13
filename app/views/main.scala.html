@@ -4,11 +4,12 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String)(content: Html)
+@(title: String)(head: Html)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        @head
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
     </head>
