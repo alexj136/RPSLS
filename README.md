@@ -12,6 +12,8 @@ of the inputs given for the players and rounds.
 Connecting the two parts together was more than I could manage. Please bear in
 mind that this is the first web app I've ever built!
 
+Some property-based tests of the game's logic can be found in `test/`.
+
 #### Instructions
 
 - The web app can be build and run with `sbt run`, and can be played with by
